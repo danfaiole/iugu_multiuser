@@ -3,7 +3,7 @@
 require "rest-client"
 require "json"
 
-module IuguService
+module IuguMultiuser
   class Base
 
     BASE_URL = "https://api.iugu.com/v1"
@@ -11,7 +11,7 @@ module IuguService
     def initialize(api_key:)
       @api_key = api_key.empty? ? ENV["IUGU_API_KEY"] : api_key
 
-      raise IuguService::MissingApiKeyError("Chave de API não configurada para subconta do cliente.") if @api_key.empty?
+      raise IuguMultiuser::MissingApiKeyError("Chave de API não configurada para subconta do cliente.") if @api_key.empty?
     end
 
     def send_request(method, url, params = {})
@@ -28,11 +28,11 @@ module IuguService
       handle_response(response)
 
     rescue RestClient::ResourceNotFound
-      raise IuguService::NotFound
+      raise IuguMultiuser::NotFound
     rescue RestClient::UnprocessableEntity => ex
-      raise IuguService::ValidationError.new JSON.parse(ex.response)['errors']
+      raise IuguMultiuser::ValidationError.new JSON.parse(ex.response)['errors']
     rescue RestClient::BadRequest => ex
-      raise IuguService::ParamError.new JSON.parse(ex.response)['errors']
+      raise IuguMultiuser::ParamError.new JSON.parse(ex.response)['errors']
     end
 
     def validate_buyer_hash(hash)
@@ -52,28 +52,28 @@ module IuguService
     private
 
     def validate_hash(hash, array_of_keys)
-      array_of_keys.each { |key| raise IuguService::ParamError.new("Required key: #{key}") if hash.transform_keys(&:to_sym)[key].empty? }
+      array_of_keys.each { |key| raise IuguMultiuser::ParamError.new("Required key: #{key}") if hash.transform_keys(&:to_sym)[key].empty? }
       hash
     end
 
     def headers
       {
         authorization: 'Basic ' + Base64.encode64(@api_key + ':'),
-        accept: 'application/json',
-        accept_charset: 'utf-8',
-        content_type: 'application/json; charset=utf-8'
+        accept: "application/json",
+        accept_charset: "utf-8",
+        content_type: "application/json; charset=utf-8"
       }
     end
 
      def handle_response(response)
         response_json = JSON.parse(response.body)
 
-        raise IuguService::NotFound if response_json.is_a?(Hash) && response_json['errors'] == 'Not Found'
-        raise IuguService::RequestError, response_json['errors'] if response_json.is_a?(Hash) && response_json['errors'] && response_json['errors'].length > 0
+        raise IuguMultiuser::NotFound if response_json.is_a?(Hash) && response_json['errors'] == 'Not Found'
+        raise IuguMultiuser::RequestError, response_json['errors'] if response_json.is_a?(Hash) && response_json['errors'] && response_json['errors'].length > 0
 
         response_json
       rescue JSON::ParserError
-        raise IuguService::RequestError
+        raise IuguMultiuser::RequestError
       end
   end
 end
