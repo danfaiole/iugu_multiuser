@@ -3,8 +3,6 @@
 require_relative "iugu_multiuser/version"
 
 module IuguMultiuser
-  class Error < StandardError; end
-
   class NotFound < StandardError; end
 
   class ParamError < StandardError; end
@@ -15,6 +13,7 @@ module IuguMultiuser
 
   class RequestError < StandardError; end
 
+  class ParserError < StandardError; end
 
   # Your code goes here...
 end
