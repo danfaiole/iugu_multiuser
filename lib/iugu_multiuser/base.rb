@@ -27,12 +27,6 @@ module IuguMultiuser
       raise IuguMultiuser::ParamError(JSON.parse(e.response)["errors"])
     end
 
-    # def validate_buyer_hash(hash)
-    #   validate_hash(hash, [
-    #     :name, :document, :email
-    #   ])
-    # end
-
     # def validate_credit_card_hash(hash)
     #   validate_hash(hash, [
     #     :card_number, :card_holder_name,
@@ -43,10 +37,10 @@ module IuguMultiuser
 
     private
 
-    # def validate_hash(hash, array_of_keys)
-    #   array_of_keys.each { |key| raise IuguMultiuser::ParamError.new("Required key: #{key}") if hash.transform_keys(&:to_sym)[key].empty? }
-    #   hash
-    # end
+    def validate_hash(hash, array_of_keys)
+      array_of_keys.each { |key| raise IuguMultiuser::ParamError.new("Required key: #{key}") if hash.transform_keys(&:to_sym)[key].empty? }
+      hash
+    end
 
     def headers
       api_key_to_encode = "#{@api_key}:"

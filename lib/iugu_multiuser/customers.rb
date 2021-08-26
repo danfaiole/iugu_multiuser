@@ -8,48 +8,45 @@ module IuguMultiuser
     #
     # ==== Attributes
     #
-    # * +buyer_params+ - Hash com dados do customer
+    # * +customer_params+ - Hash com dados do customer
     # * +address_params+ - Hash com dados de endereço
     #
     # ==== Examples
     #
     #    base = Base.new("Example String")
     #    base.method_name("Example", "more")
-    def create(buyer_params, address_params)
-      puts "**** Criando customer no Iugu ****"
-
-      buyer_hash = buyer_params.transform_keys(&:to_sym)
+    def create(customer_params, address_params)
+      customer_hash = customer_params.transform_keys(&:to_sym)
       address_hash = address_params.transform_keys(&:to_sym)
 
-      validate_buyer_hash(buyer_hash)
+      validate_customer_hash(customer_hash)
 
-      params = {
-        name: buyer_hash[:name],
-        cpf_cnpj: buyer_hash[:document].gsub(/\D/, ''),
-        email: buyer_hash[:email],
-        # cc_emails: buyer_hash[:email],
-        custom_variables: [{
-          name: 'external_id',
-          value: buyer_hash[:id]
-        }],
-        zip_code: address_hash[:zip_code],
-        number: address_hash[:number],
-        street: address_hash[:street],
-        city: address_hash[:city],
-        state: address_hash[:state],
-        district: address_hash[:district]
-      }
-
-      object = send_request(
-        'POST',
+      send_request(
+        "POST",
         BASE_PATH,
-        params
+        request_params(customer_hash, address_hash)
       )
+    end
 
-      pp object
-      puts "**** Criado customer no iugu ****"
+    def request_params(customer_hash, address_hash)
+      {
+        name: customer_hash[:name],
+        cpf_cnpj: customer_hash[:document].gsub(/\D/, ""),
+        email: customer_hash[:email],
+        custom_variables: [{
+          name: "external_id",
+          value: customer_hash[:id]
+        }]
+      }.merge(address_hash)
+    end
 
-      object
+    private
+
+    def validate_customer_hash(hash)
+      validate_hash(
+        hash,
+        %i[name document email]
+      )
     end
   end
 end
