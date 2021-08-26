@@ -80,7 +80,7 @@ module IuguMultiuser
 
       response_json
     rescue JSON::ParserError => e
-      raise IuguMultiuser::RequestError(e.message)
+      raise IuguMultiuser::ParserError(e.message)
     end
   end
 end

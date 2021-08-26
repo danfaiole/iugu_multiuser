@@ -14,6 +14,4 @@ module IuguMultiuser
   class RequestError < StandardError; end
 
   class ParserError < StandardError; end
-
-  # Your code goes here...
 end
