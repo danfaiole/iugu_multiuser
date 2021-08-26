@@ -19,7 +19,6 @@ module IuguMultiuser
       request = create_request(http_verb, url, params)
       response = RestClient::Request.execute(request)
       handle_response(response)
-
     rescue RestClient::ResourceNotFound
       raise IuguMultiuser::NotFound
     rescue RestClient::UnprocessableEntity => e
@@ -63,9 +62,9 @@ module IuguMultiuser
       {
         verify_ssl: true,
         headers: headers,
-        method: http_verb.upcase,
+        method: http_verb.strip.upcase,
         payload: params.to_json,
-        url: "#{BASE_URL}/#{url}",
+        url: "#{BASE_URL}/#{url.strip}",
         timeout: 30
       }
     end
@@ -80,8 +79,8 @@ module IuguMultiuser
       end
 
       response_json
-    rescue JSON::ParserError
-      raise IuguMultiuser::RequestError
+    rescue JSON::ParserError => e
+      raise IuguMultiuser::RequestError(e.message)
     end
   end
 end
