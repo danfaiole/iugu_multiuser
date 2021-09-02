@@ -11,10 +11,6 @@ module IuguMultiuser
     # * +customer_params+ - Hash com dados do customer
     # * +address_params+ - Hash com dados de endereço
     #
-    # ==== Examples
-    #
-    #    base = Base.new("Example String")
-    #    base.method_name("Example", "more")
     def create(customer_params, address_params)
       customer_hash = customer_params.transform_keys(&:to_sym)
       address_hash = address_params.transform_keys(&:to_sym)
@@ -24,11 +20,26 @@ module IuguMultiuser
       send_request(
         "POST",
         BASE_PATH,
-        request_params(customer_hash, address_hash)
+        create_request_params(customer_hash, address_hash)
       )
     end
 
-    def request_params(customer_hash, address_hash)
+    # Acha customer através de user
+    #
+    # ==== Attributes
+    #
+    # * +customer_id+ - id do usuário a ser consultado
+    #
+    def find(customer_id)
+      send_request(
+        "GET",
+        "#{BASE_PATH}/#{customer_id}"
+      )
+    end
+
+    private
+
+    def create_request_params(customer_hash, address_hash)
       {
         name: customer_hash[:name],
         cpf_cnpj: customer_hash[:document].gsub(/\D/, ""),
@@ -39,8 +50,6 @@ module IuguMultiuser
         }]
       }.merge(address_hash)
     end
-
-    private
 
     def validate_customer_hash(hash)
       validate_hash(
