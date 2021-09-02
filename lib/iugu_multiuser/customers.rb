@@ -37,6 +37,21 @@ module IuguMultiuser
       )
     end
 
+    # Deleta customer na base Iugu
+    #
+    # ==== Attributes
+    #
+    # * +customer_id+ - id do usuário a ser consultado
+    #
+    def delete(customer_id)
+      customer = find(customer_id)
+
+      send_request(
+        "DELETE",
+        "#{BASE_PATH}/#{customer["id"]}"
+      )
+    end
+
     private
 
     def create_request_params(customer_hash, address_hash)
